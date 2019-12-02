@@ -8,4 +8,4 @@ RUN mkdir -p /frp \
 && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 && rm -rf /tmp/*
 WORKDIR /frp
-CMD [ "frps", "-c","frps.ini" ]
+CMD [ "/frp/frps", "-c","frps.ini" ]
