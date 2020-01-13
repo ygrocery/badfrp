@@ -1,12 +1,23 @@
 要点整合
 
+python中数字有四种类型：
+整数、布尔型、浮点数和复数
+int (整数), 如 1, 可表示长整型，没有python2中的Long
+bool (布尔), 如 True。
+float (浮点数), 如 1.23、3E-2
+complex (复数), 如 1 + 2j、 1.1 + 2.2j
+
+标准数据类型
+不可变数据（3 个）：Number（数字）、String（字符串）、Tuple（元组）；
+可变数据   （3 个）：List（列表）、Dictionary（字典）、Set（集合）
+
 ========================基本要求
 1. 编码
 头部#-*-coding:utf-8-*-标识
 
 2. 格式
 2.1 统一使用4个空格作为缩进
-2.2 每行代码尽量不超过80个字符
+2.2 每行代码尽量不超过80个字符，超出可用\换行
 2.3 自然语言使用"...",
 2.3 机器标识使用'...',例如dict中的key
 2.3 正则表达式使用r"..."
@@ -177,6 +188,10 @@ print(fact_iter(3,1))
 显示对象的属性，如果没有提供参数，则显示全局变量的名字
 dir([obj])
 
+查看python中的保留字
+import keyword
+keyword.kwlist
+
 切片
 #对于经常指定索引范围操作，循环十分繁琐，所以提供了切片
 #切片左边是闭区间，右边是开区间，所以不包含末尾数
@@ -187,6 +202,24 @@ for i in range(n):
     r.append(L[i])
 print(r)
 print(L[0:3])
+
+
+判断对象类型
+x = 'abc'
+print(type(x))
+print(isinstance(x,str))
+#isinstance 和 type 的区别在于：
+#type()不会认为子类是一种父类类型。
+#isinstance()会认为子类是一种父类类型。
+class A:
+    pass
+class B(A):
+    pass
+print(isinstance(A(), A))
+print(type(A()) == A)
+print(isinstance(B(), A))
+print(type(B()) == A)
+
 
 
 迭代
@@ -220,15 +253,40 @@ print(L)
 [x * x for x in range(1,11)]
 #可以加上if判断
 print([x * x for x in range(1,11) if x % 2 ==0])
+L = ['Hello', 'World', 18, 'Apple',None]
+print([s.lower() for s in L if isinstance(s, str)])
 #可以多层循环
 [m + n for m in '123' for n in '456']
 #将两个变量生成list
 print([k + '=' + v for k, v in {'a':'b','c':'d','e':'f'}.items()])
 
 
+生成器
+#为了节省内存空间，而不创建完整的list
+#这种一边循环，一遍计算的机制称为generator
+#将列表生成器的[]改成()就能创建一个生成器
+g = (x * x for x in range(2))
+print(g)
+#返值: <generator object <genexpr> at 0x000002193C02F750>
+#通过next()获取生成器的值
+print(next(g))
+print(next(g))
+print(next(g))
+#直到计算到最后1个元素，将会抛出StopIteration错误
+#基本上不用next()，而是用for循环，并且不用担心错误
+for n in g:
+    print(n)
 
-
-
-
-
+#斐波拉数列用列表生成器无法实现，但可以用函数实现
+#generator与函数执行流程不一样，遇到yield返回,每次调用next()执行
+def fib(max):
+    n,a,b = 0,0,1
+    while n < max:
+        yield b
+        a,b = b, a+b
+        n = n + 1
+    return 'done'
+#错误示范：f = fib(6); print(f)
+for n in fib(6):
+    print(n)
 
