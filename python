@@ -1,0 +1,234 @@
+要点整合
+
+========================基本要求
+1. 编码
+头部#-*-coding:utf-8-*-标识
+
+2. 格式
+2.1 统一使用4个空格作为缩进
+2.2 每行代码尽量不超过80个字符
+2.3 自然语言使用"...",
+2.3 机器标识使用'...',例如dict中的key
+2.3 正则表达式使用r"..."
+2.3 文档字符串使用"""...."""
+2.4 模块级函数和类之间空2行，类成员函数间空1行
+2.5 不推荐import os,sys模块连写，建议分开写
+2.5 可以from subprocess import Popen,pipe
+2.6 在二元运算符两边各空1格
+
+
+
+========================字符串拼接
+longStr=''
+shortStrs=[str1,str2,..,strN]
+for S in shortStrs:
+    longStr += S
+谨记python中字符串是不可变的，所以每次循环
+都是讲原来的longStr和str拷贝成新字符串，随着longStr不断增长，
+需要拷贝的内容就越来越长，这显然不是一个好主意。
+推荐：longStr = ''.join(shortStrs)
+
+
+========================列表操作
+extend() 追加末尾，接受参数是list，相当于shell中的"$@"
+append() 最佳末尾，接受任何数据类型，接受list相当shell中的"$*"
+
+
+
+========================元组
+一旦初始化就不能更改，但可以切片获取元素
+
+定义1个元素时t = (1,)需要末尾加逗号，否则表达数学意义上的括号
+tuple所谓的不变是指，元素的指向不变，特例:包含列表元素
+所以要创建列表内容不变，需要保证每个元素本身不变
+
+tuple比list操作速度快
+若需定义一个值的常量集，且需要不断遍历，请使用tuple
+
+因为不可修改，相当于“写保护”
+使用tuple如同list拥有一个隐含的assert语句，若必须修改,list()转换
+
+tuple可以作为dictionary的key,但list不可以
+
+函数return多值就是tuple应用,函数若要同时接受多个变量值可以用tuple
+
+
+========================字典
+dict在其他语言中一般称为map,键-值key-value存储，极快的查找速度
+
+#预防空值报错
+d = {'t1':1,'t2':2,'t3':3}
+#删除元素
+d.pop('t1')
+print(d)
+#print(d['t1'])
+#空值默认返回None，可以设置默认值
+print(d.get('t1'))
+
+
+========================集合
+#set只能嵌套1个元素，嵌套多为list，tuple
+#其中嵌套tuple显示效果同{}
+#set()表示空集，而{}表示空字典
+#s = set(['ni','wo','ta'])
+s = set(['ni','wo','ta'])
+s.add(4)
+s.add(4)
+s.remove(4)
+print(s)
+
+
+========================参数
+#位置参数(必选参数)
+def power(x,n):
+    s = 1
+    while n > 0:
+        n = n =1
+        s = s * x
+    return s
+power(5,2)
+
+#默认参数
+#默认参数必须是指向不变对象
+def add_end(L=[]):
+    L.append('END')
+    return  L
+print(add_end())
+print(add_end())
+#参数可以改进，用None
+def add_end(L=None):
+    if L is None:
+        L = []
+    L.append('END')
+    return L
+
+#可变参数
+#可变参数和定义1个list或tuple参数相比，只需在参数前加1个*号
+#可变参数允许传入0个或任意个参数，在函数调用时自动组装成tuple
+#def calc(num):
+#print(calc((1,2)))
+def calc(*num):
+    sum = 0
+    for n in  num:
+        sum = sum + n * n
+    return sum
+#1# 传入参数
+print(calc(1,2))
+#若是已经存在list或tuple，需要传入则：
+#num = [1,2]
+#1# clac(num[0],num[1])
+#2# calc(*num)
+
+#关键字参数
+#功能和可变参数相同，但是它在函数内部组装成dict
+#它可以扩展函数功能，例如调用者愿意提供非必须信息
+#定义方式def test(**key)
+#若是要传入一个字典，则test(**dict1)
+
+
+#命名关键字参数
+#对于关键字参数，调用者可以传入任意参数，但是命名关键字可以进行限制
+#def person(name, age, *, city='shenzhen', job='engineer')
+#以上就是关键字的模板，需要一个*作为分隔符,否则就是位置参数
+#若是不输入命名关键字参数，且没有默认参数则会报错
+
+#参数组合
+#顺序：必选参数、默认参数、可变参数/命名关键字参数、关键字参数
+#对于任意函数，都可以通过func(*args,**kw)调用
+#对于可变参数，建议组装成list或tuple，然后通过*args传入
+#对于关键字参数，建议先组装成dict，然后通过**kw传入
+
+
+
+========================函数
+
+#递归函数
+#一个函数内部调用自身，这就是递归函数
+#fact(n)=n!=(n-1)!*n=fact(n-1)*n
+#由上推理可得，当阶乘n=1时需要特殊处理
+def fact(n):
+    if n==1:
+        return 1
+    return n * fact(n-1)
+#递归都可以改成循环，但递归定义简单，逻辑清晰
+#函数调用时通过栈stack数据结构实现的
+#每进入1个函数调用，栈就会加1层;函数返回，栈就减1层
+#由此栈大小非无线，需要防止栈溢出
+
+#尾递归函数
+#可通过尾递归优化，类似与循环，而循环可看做特殊的尾递归
+#在函数返回调用自身，且return不能包含表达式，编译器优化调用
+#使得调用的时候，都只占用一个栈帧，不会出现栈溢出
+def fact(n):
+    return fact_iter(n,1)
+def fact_iter(num, product):
+    if num == 1:
+        return product
+    return fact_iter(num -1, num * product)
+#num -1和num * product函数调用前被计算了，所以仅返回递归函数本身
+print(fact(3))
+print(fact_iter(3,1))
+#但是大多数语言没有针对尾递归优化，而python解释器也没有
+
+
+
+
+========================方法
+显示对象的属性，如果没有提供参数，则显示全局变量的名字
+dir([obj])
+
+切片
+#对于经常指定索引范围操作，循环十分繁琐，所以提供了切片
+#切片左边是闭区间，右边是开区间，所以不包含末尾数
+L=list(range(100))
+r=[]
+n = 3
+for i in range(n):
+    r.append(L[i])
+print(r)
+print(L[0:3])
+
+
+迭代
+#可以通过for..in遍历的都称为迭代Iteration
+#python的for循环抽象程度要高于Java(迭代需要下标)
+#因为它可以作用于list,tuple之外的其他可迭代对象
+for cha in 'abc':
+    print(cha)
+#实现Java类似的下标循环
+for i, value in enumerate(['a','b','c']):
+    print(i,value)
+#在for循环里同时引用两个变量，在python中很常见
+for x,y in [(1,1),(2,4),(3,9)]:
+    print(x,y)
+#判断可迭代对象
+#误区1：可迭代不一定是可切片
+from _collections_abc import Iterable
+print(isinstance('f', Iterable))
+print(isinstance([1,2,3],Iterable))
+print(isinstance(123,Iterable))
+print(isinstance({1,2,3},Iterable))
+
+
+列表生成式
+#原始方法
+L = []
+for x in range(1,11)
+    L.append(x * x)
+print(L)
+#一句话代替
+[x * x for x in range(1,11)]
+#可以加上if判断
+print([x * x for x in range(1,11) if x % 2 ==0])
+#可以多层循环
+[m + n for m in '123' for n in '456']
+#将两个变量生成list
+print([k + '=' + v for k, v in {'a':'b','c':'d','e':'f'}.items()])
+
+
+
+
+
+
+
+
