@@ -181,6 +181,199 @@ print(fact(3))
 print(fact_iter(3,1))
 #但是大多数语言没有针对尾递归优化，而python解释器也没有
 
+偏函数
+#functools模块提供很多有用功能
+def int2(x, base=2):
+    return int(x, base)
+#改进
+import functools
+int2 = functools.partial(int, base=2)
+print(int2('1010001'))
+print(int2('10101010'))
+#作用：把一个函数某些参数固定，返回新的函数，简化操作
+#有点像数据库中定义存储过程
+
+
+
+========================高阶函数
+函数式编程
+#functional programming，接近于抽象的数学计算
+#记住一点越是抽象的计算就离计算机硬件越远
+#特点：允许把函数本身作为参数传入到另一个函数，允许返回一个函数
+#python允许使用变量，因此不是纯函数式编程语言
+高阶函数
+#特性： 1.变量可以指向函数；2.函数名也是变量
+#一个函数可以接受另一个函数作为参数，这种函数就称为高阶函数
+#函数式编程就是指这种高度抽象的编程范式
+def add(x,y,f):
+    return f(x) + f(y)
+print(add(-3,9,abs))
+
+#高阶函数--map函数
+#传入两个参数、1.函数；2.Iterable
+#将传入的函数依次作用到每个元素，并发结果作为新的Iterator返回
+def f(x):
+    return x * x
+list1 = [x for x in range(1,10)]
+#因为iterator是惰性序列，所以需要通过list()函数计算，并返回list
+r = map(f, list1)
+print(list(r))
+#结果：[1, 4, 9, 16, 25, 36, 49, 64, 81]
+#这就是将循环代码抽象化，使代码逻辑清晰
+print(list(map(str,[1,2,3,4,5])))
+
+#高阶函数--filter函数
+#传入两个参数、1.函数；2.序列
+#将传入的函数依次作用到每个元素，根据返回值true or false保留or丢弃
+def not_empty(s):
+    return s and s.strip()
+print(list(filter(not_empty, ['a','','b',None,' '])))
+#计算素数
+# 定义1个从3开始的奇数序列
+def _odd_iter():
+    n = 1
+    while True:
+        n = n + 2
+        yield  n
+def _not_divisible(n):
+    return  lambda x: x % n > 0
+def primes():
+    yield 2
+    it = _odd_iter()
+    while True:
+        n = next(it)
+        yield  n
+        it = filter(_not_divisible(n), it)
+for n in primes():
+    if n < 20:
+        print(n)
+    else:
+        break
+
+
+#高阶函数--reduce函数
+#传入两个参数、1.函数；2.序列
+#将传入的序列和函数递归累计算
+from functools import reduce
+def fn(x,y):
+    return x * 10 + y
+print(reduce(fn, [1,2,3,4]))
+#假如python没有提供int()函数，我们可以自己写一个
+from functools import reduce
+def str2int(s):
+    def fn(x,y):
+        return x * 10 + y
+    def char2num(s):
+        return {'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}[s]
+    return reduce(fn, map(char2num, s))
+print(str2int('3523'))
+
+
+#高阶函数--sorted函数
+#用于字符串、dict排序
+#支持接收1个key函数来自定义排序
+#默认情况下对字符串排序按照ascii大小比较
+print(sorted(['lingyi','Fengjie','huangzhi','Wenqiang']))
+#不区分大小写
+print(sorted(['lingyi','Fengjie','huangzhi','Wenqiang'], key=str.lower))
+#排序翻转
+print(sorted(['lingyi','Fengjie','huangzhi','Wenqiang'],reverse=True))
+
+
+lambda函数--匿名函数
+#传入函数不需要显式定义函数时
+from functools import reduce
+def char2num(s):
+    return {'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}[s]
+def str2int(s):
+    return reduce(lambda x,y: x * 10 + y, map(char2num,s))
+print(str2int('3523'))
+#lambda x,y: x *10 + y实际上就是
+def f(x,y):
+    return x *10 + y
+#匿名函数只能有一个表达式，返回值就是该表达式的结果
+
+
+返回函数
+#一个函数的返回值返回一个函数
+
+#返回函数--闭包函数
+#lazy_sum中定义sum函数，它引用了lazy_sum的参数和局部变量
+#当lazy_sum返回函数sum时，相关参数和变量保存在返回函数中
+#这被称为“闭包”closure
+#
+def lazy_sum(*args):
+    def sum():
+        ax = 0
+        for n in args:
+            ax = ax + n
+        return ax 
+    return sum
+f = lazy_sum(1,3,5,7,9)
+#调用函数才是计算结果
+print(f())
+#返回函数不要引用任何循环变量，或后续会发生变化的变量
+#如果一定要用，则再创建一个函数，用该函数参数绑定循环变量当前的值
+#缺点是代码过长，可以利用lambda缩短代码
+def count():
+    def f(j):
+        def g():
+            return j * j
+        return g
+    fs = []
+    for i in range(1,4):
+        fs.append(f(i))
+    return fs
+f1,f2,f3 = count()
+print(f1(),f2(),f3())
+
+
+
+#返回函数--装饰器
+#函数是一个对象，而且函数对象可以被赋值给变量
+#函数对象有__name__属性，可以拿到函数名字
+def now():
+    print('hello')
+f = now
+f()
+print('now:',now.__name__,'f:',f.__name__)
+#在代码运行期间动态增加功能的方式称为装饰器decorator
+#定义log，他是一个装饰器，所以接受一个函数作为参数并返回一个函数
+def log(func):
+    def wrapper(*args, **kw):
+        print('call %s():' % func.__name__)
+        return func(*args, **kw)
+    return wrapper
+#@log放到now()定义处，相当于now = log(now)
+@log
+def now():
+    print('hello world')
+now()
+#从now编程wrapper
+print(now.__name__)
+#这样一来函数签名的代码执行就会出错！
+#wrapper.__name__ = func.__name__这样补充回去
+#python内置functools.wraps就处理这个
+
+#若是decorator本身需要传入参数，则需要返回装饰器的高阶函数
+#比如定义log文本
+import functools
+def log(text):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kw):
+            print('%s %s():' %(text, func.__name__))
+            return func(*args, **kw)
+        return wrapper
+    return decorator
+#相当于now = log('execute')(now)
+@log('execute')
+def now():
+    print('third test')
+now()
+print(now.__name__)
+#在面向对象OOP设计模式中，decorator称为装饰模式
+#它需要通过集成和组合来实现，python的能用函数实现、类实现
 
 
 
@@ -191,6 +384,9 @@ dir([obj])
 查看python中的保留字
 import keyword
 keyword.kwlist
+
+查看内置函数
+https://docs.python.org/3/library/functions.html
 
 切片
 #对于经常指定索引范围操作，循环十分繁琐，所以提供了切片
@@ -221,7 +417,6 @@ print(isinstance(B(), A))
 print(type(B()) == A)
 
 
-
 迭代
 #可以通过for..in遍历的都称为迭代Iteration
 #python的for循环抽象程度要高于Java(迭代需要下标)
@@ -234,6 +429,11 @@ for i, value in enumerate(['a','b','c']):
 #在for循环里同时引用两个变量，在python中很常见
 for x,y in [(1,1),(2,4),(3,9)]:
     print(x,y)
+#for循环数据类型，统称为可迭代对象Iterable
+#1类：集合数据类型；list/tuple/dict/set/str等
+#2类：generator类；包括生成器和带有yield的generator function
+#将1类的list,dict,str这些iterable变成iterator可以用iter()函数
+#iterator是惰性计算，不知道序列长度
 #判断可迭代对象
 #误区1：可迭代不一定是可切片
 from _collections_abc import Iterable
@@ -241,6 +441,17 @@ print(isinstance('f', Iterable))
 print(isinstance([1,2,3],Iterable))
 print(isinstance(123,Iterable))
 print(isinstance({1,2,3},Iterable))
+#判断迭代器
+#生成器不但可以用作for循环，还可以被next()不断调用并返回值
+#直到最后抛出stopiteration错误表示无法继续返值
+#误区2: 只有能被next()函数调用并返回下一个值的对象才是迭代器
+from _collections_abc import Iterator
+x = (x * x for x in range(2))
+print(type(x))
+print(isinstance(x,Iterator))
+list1 = [1,2,3]
+print(isinstance(list1,Iterator))
+print(isinstance(iter(list1),Iterator))
 
 
 列表生成式
@@ -276,7 +487,6 @@ print(next(g))
 #基本上不用next()，而是用for循环，并且不用担心错误
 for n in g:
     print(n)
-
 #斐波拉数列用列表生成器无法实现，但可以用函数实现
 #generator与函数执行流程不一样，遇到yield返回,每次调用next()执行
 def fib(max):
@@ -289,4 +499,83 @@ def fib(max):
 #错误示范：f = fib(6); print(f)
 for n in fib(6):
     print(n)
+#因为他是generator，所以获取不了return语句
+#若想要返回值，需要捕捉StopIteration错误
+g = fib(6)
+while True:
+    try:
+        x = next(g)
+        print('g:', x)
+    except StopIteration as e:
+        print('Generator return value:', e.value)
+        break
+
+
+模块介绍
+#python引入按目录来组织模块的方法，称为包package
+#第三方木块路径添加
+import sys
+sys.path.append('your/path')
+#第二种是修改环境变量pythonpath
+
+面向对象
+#首先考虑的不是程序的执行流程
+#比如学生这个数据类型应该视为一个对象
+#该对象拥有name和score这两个属性
+#object类是所有类最终都会继承的类，可不填
+#__init__第一个参数表示创建的实例本身
+class Student(object):
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+    def print_score(self):
+        print('%s: %s' %(self.name, self.score))
+#给对象发消息实际上就是调用对象对应的关联函数
+#称之为对象的方法method
+#面向对象的程序如下
+bart = Student('Bart Simpson', 59)
+lisa = Student('Lisa simpson', 97)
+bart.print_score()
+lisa.print_score()
+#和静态语言不通，python允许对实例绑定任何数据
+bart.age = 8
+print(bart.age)
+#如果想要限制外部修改和访问内部变量
+#则可以将name，score改成__name,__score
+#外部需要获取name和score变量值要如何？
+#可以在内部定义函数
+def get_name(self):
+    return self.__name
+def get_score(self):
+    return self.__score
+#如果后面改需求，需要修改内部变量，则方法同上
+def set_score(self,score):
+    if 0 <= score <= 100:
+        self.__score = score
+    else:
+        raise ValueError('bad score')
+#有时候你会看到一个下划线_开头的变量
+#表示尽管可以被访问，但请不要随意访问
+#那么__name是否真的不可以访问？
+#其实不是的，它只是被解释器改成_Student__name
+#所以可以通过_Student__name访问
+#但是建议你不要这样做，因为解释权归python解释器所有
+
+
+继承和多态
+#继承是类中的方法，类似于函数中的装饰器
+#多态是子类方法覆盖父类方法，相当于是后代变异
+
+
+
+
+
+
+
+
+
+
+
+
+
 
