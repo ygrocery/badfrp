@@ -1,0 +1,75 @@
+# -*- coding:utf8 -*-
+
+# 参考来自 https://www.runoob.com/python3/python3-number.html
+
+# -------------转化数字类型------------- #
+# 字符转换为整数
+# 默认字符转换为整数
+print(int('12345678',base=10))
+print(int('1234567',base=8))
+print(int('12345abc',base=16))
+print(int('10000000',base=2))
+
+# 字符转换为浮点数
+print(float('35.3'))
+print(float('353'))
+
+# 转化为复数
+print(complex(3))
+print(complex(3, 4))
+
+
+# -------------数字函数------------- #
+import math
+# 向上取整
+print(math.ceil(4.1))
+# 向下取整
+print(math.floor(5.1))
+# 只去整数
+print(math.trunc(5.9))
+# 四舍五入,可以指定保留小数位数
+print(round(5.900, 2))
+
+# 返回绝对值
+print(abs(-10.3))
+print(math.fabs(-10.3))
+
+# 最大值、最小值
+list1 = [1, 2, 3, 4, 5]
+print(max(list1))
+print(min(list1))
+
+# -------------随机数------------- #
+# 随机数
+import random
+num1 = [1, 2, 3, 4, 5]
+print(random.choice(num1))
+
+
+# -------------数学函数------------- #
+import math
+# 幂函数：底数为10，x=10，y=1
+print(math.log10(10))
+print(math.log(9, 3))
+
+# 返回平方根=10
+print(math.sqrt(100))
+
+# 指数函数：x**y的次方计算=100
+print(pow(10, 2))
+
+
+# -------------三角函数------------- #
+import math
+# 1°= π/180弧度
+# 近似值为0.01745弧度，周角为2π弧度
+# 计算弧度的正弦值,sin(π/2)=1
+print(math.sin(math.pi/2))
+print(math.cos(0))
+print(math.tan(math.pi/4))
+
+# 弧度转为角度
+print(math.degrees(0.01745))
+# 角度转为弧度
+print(math.radians(1))
+
