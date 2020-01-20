@@ -1,0 +1,86 @@
+# -*- coding:utf8 -*-
+
+str1 = " wo shi xiao jiuxin,ni ne?  "
+str2 = "ping_fang 1-2"
+
+# -------------拼接、切片------------- #
+# 字符串拼接
+# 拼接不同类型，建议使用格式化方式，避免数据类型不同导致报错
+print(str1 + ' ' + str2)
+
+
+# 重复打印
+print('-' * 50)
+
+# 字符获取字符和截取字符串并无不同
+print('打印第二个字符:', str1[1], type(str1[1]))
+print('打印第二个字符:', str1[1:2], type(str1[1:2]))
+
+# 判断子字符串是否包含于字符串中
+print('对的:', 'wo' in str1, '错的:', 'wi' not in str1)
+
+# 打印查找到的第一个匹配的字符
+print(str1.find('sh'))
+
+# r表示row原生字符串，可以用于正则表达式中，避免二次转义
+print('换行:', '\nwo\nni')
+print('不换行:', r'\nwo\nni')
+
+# -------------分割、替换------------- #
+# 以不可见字符作为分隔符
+# 会把字符前后不可见也截取出来
+print(str1.split(' '))
+
+# 把i改成new,替换前3次匹配的字符
+print(str1.replace('i', 'new', 3))
+
+
+
+# -------------字符串格式化------------- #
+# %s是万能的，表示为string类型
+# 默认右对齐，-表示左对齐
+print('%-10s%5s%8s' %('farther',3,10))
+
+# 浮点数, 保留两位小数
+print('%0.2f' %3.3)
+
+# 向下取整
+print('%d' %(32.9))
+
+print('转为八进制:''%o' %9)
+print('转为十六进制:' '%x, %X' %(15,13))
+
+
+# 3.6版本添加的新格式化方式: f-string
+# 进一步抽象化，无需判断%s，还是%d类型
+print(f'hello{str1}')
+print(f'{33+22}')
+tup1 = {'site':'lingyi', 'web':'www.lyone.top'}
+print(f'{tup1["site"]}的网站：{tup1["web"]}')
+
+
+
+# -------------常用函数------------- #
+
+# 首字母大写
+print(str2.capitalize())
+
+# 字符两边的填充宽度、填充字符
+print(str2.center(30,'0'))
+
+# 统计子字符串出现的次数
+print(str1.count('w'))
+
+# 默认去除字符两边的不可见字符
+print('12121'.strip('1'))
+print('65656'.lstrip('6'))
+print('38383'.rstrip('3'))
+
+
+
+
+
+
+
+
+
