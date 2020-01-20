@@ -1,5 +1,11 @@
 # -*- coding:utf8 -*-
 
+'''
+Unicode是内存编码的规范，
+UTF-8是如何保存于传输Unicode的手段
+所有字符串都是unicode字符串
+Python3中默认源码是UTF-8编码
+'''
 #001 字符转换为Unicode
 print(ord("中"))
 print(oct(ord('中')))
